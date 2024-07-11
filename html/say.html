@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>say something</title>
+    <style>
+        body {
+            background-color: rgba(255, 244, 182, 0.5);
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .top-space {
+            margin-top: 5%;
+        }
+
+        .logbook-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 50px;
+            background: #FFFEF2;
+            border-radius: 10px;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid rgb(111, 78, 55);
+            padding: 10px 0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-form {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .log-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgb(111, 78, 55);
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .log-form input[type="text"]:focus {
+            outline: none;
+            border-color: rgb(111, 78, 55);
+            box-shadow: 0 0 5px pink;
+        }
+
+        .log-form input[type="button"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: rgb(111, 78, 55);
+            color: #FFFEF2;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .medsans {
+            color: rgb(111, 78, 55);
+            font-family: Assistant, sans-serif;
+            font-size: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--toro home button-->
+<nav class="center top-space">
+    <a href="./index.html"><img
+            src="https://www.models-resource.com/resources/big_icons/45/44369.png?updated=1616444557"
+            alt="toro" style="height:100px;"></a>
+</nav>
+
+<!--logbook container-->
+<div class="logbook-container center medsans">
+    <h2>say something</h2>
+    <div class="log-form">
+        <input type="text" id="logInput" placeholder="anything...">
+        <input type="button" value="submit" onclick="addLogEntry()">
+    </div>
+    <div id="logEntries">
+        <!--log entries will appear here-->
+    </div>
+</div>
+
+<!-- mongodb storage -->
+<script>
+    async function loadLogEntries() {
+        const response = await fetch('http://localhost:5001/entries');
+        const entries = await response.json();
+        const logEntries = document.getElementById('logEntries');
+        logEntries.innerHTML = '';
+        entries.forEach(entry => {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry medsans';
+            logEntry.textContent = entry.content;
+            logEntries.appendChild(logEntry);
+        });
+    }
+
+    async function addLogEntry() {
+        const logInput = document.getElementById('logInput');
+        const logEntries = document.getElementById('logEntries');
+
+        if (logInput.value.trim() === '') {
+            alert('please enter something');
+            return;
+        }
+
+        const response = await fetch('http://localhost:5001/entries', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: logInput.value })
+        });
+
+        const newEntry = await response.json();
+
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry medsans';
+        logEntry.textContent = newEntry.content;
+        logEntries.appendChild(logEntry);
+
+        logInput.value = '';
+    }
+
+    window.onload = loadLogEntries;
+</script>
+
+<!-- local storage
+<script>
+    function addLogEntry() {
+        const logInput = document.getElementById('logInput');
+        const logEntries = document.getElementById('logEntries');
+
+        if (logInput.value.trim() === '') {
+            alert('please enter something');
+            return;
+        }
+
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry medsans';
+        logEntry.textContent = logInput.value;
+        logEntries.appendChild(logEntry);
+
+        saveLogEntries(logEntries.innerHTML);
+
+        logInput.value = '';
+    }
+
+    function saveLogEntries(entries) {
+        localStorage.setItem('logEntries', entries);
+    }
+
+    function loadLogEntries() {
+        const logEntries = document.getElementById('logEntries');
+        const savedEntries = localStorage.getItem('logEntries');
+        if (savedEntries) {
+            logEntries.innerHTML = savedEntries;
+        }
+    }
+
+    // function to delete a log entry by its index
+    function deleteLogEntryByIndex(index) {
+        const logEntries = document.getElementById('logEntries');
+        const entries = logEntries.children;
+        if (index >= 0 && index < entries.length) {
+            entries[index].remove();
+            saveLogEntries(logEntries.innerHTML);
+        }
+    }
+
+    // function to delete a log entry by its content
+    function deleteLogEntryByContent(content) {
+        const logEntries = document.getElementById('logEntries');
+        const entries = logEntries.children;
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].textContent === content) {
+                entries[i].remove();
+                saveLogEntries(logEntries.innerHTML);
+                break;
+            }
+        }
+    }
+
+    // load saved log entries when the page loads
+    window.onload = loadLogEntries;
+</script>
+-->
+
+</body>
+</html>
