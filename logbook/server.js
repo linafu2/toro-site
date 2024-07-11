@@ -25,9 +25,42 @@ mongoose.connection.on('error', (err) => {
     console.error('MongoDB connection error:', err);
 });
 
+// Define Mongoose Schema
+const Schema = mongoose.Schema;
+const logEntrySchema = new Schema({
+                                      content: String,
+                                      createdAt: {
+                                          type: Date,
+                                          default: Date.now
+                                      }
+                                  });
+
+// Create Mongoose Model
+const LogEntry = mongoose.model('LogEntry', logEntrySchema);
+
 // Routes
 app.get('/', (req, res) => {
-    res.send('Hello World!'); // Replace with your actual route handlers
+    res.send('Hello World!');
+});
+
+// POST Endpoint for Adding Log Entries
+app.post('/entries', async (req, res) => {
+    try {
+        const {content} = req.body;
+
+        // Create a new log entry
+        const newLogEntry = new LogEntry({
+                                             content
+                                         });
+
+        // Save the log entry to MongoDB
+        const savedEntry = await newLogEntry.save();
+
+        res.status(201).json(savedEntry);
+    } catch (error) {
+        console.error('Error saving log entry:', error);
+        res.status(500).json({error: 'Failed to save log entry'});
+    }
 });
 
 // Start server

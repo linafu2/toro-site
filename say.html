@@ -98,7 +98,7 @@
 <!-- mongodb storage -->
 <script>
     async function loadLogEntries() {
-        const response = await fetch('http://localhost:5001/entries');
+        const response = await fetch('http://96.236.218.144:5001/entries');
         const entries = await response.json();
         const logEntries = document.getElementById('logEntries');
         logEntries.innerHTML = '';
@@ -115,26 +115,35 @@
         const logEntries = document.getElementById('logEntries');
 
         if (logInput.value.trim() === '') {
-            alert('please enter something');
+            alert('Please enter something');
             return;
         }
 
-        const response = await fetch('http://localhost:5001/entries', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content: logInput.value })
-        });
+        try {
+            const response = await fetch('http://96.236.218.144:5001/entries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: logInput.value })
+            });
 
-        const newEntry = await response.json();
+            if (!response.ok) {
+                throw new Error('Failed to add log entry');
+            }
 
-        const logEntry = document.createElement('div');
-        logEntry.className = 'log-entry medsans';
-        logEntry.textContent = newEntry.content;
-        logEntries.appendChild(logEntry);
+            const newEntry = await response.json();
 
-        logInput.value = '';
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry medsans';
+            logEntry.textContent = newEntry.content;
+            logEntries.appendChild(logEntry);
+
+            logInput.value = '';
+        } catch (error) {
+            console.error('Error adding log entry:', error);
+            alert('Failed to add log entry. Please try again.');
+        }
     }
 
     window.onload = loadLogEntries;
