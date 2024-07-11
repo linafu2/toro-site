@@ -9,6 +9,19 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+// Setting up https with Express
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+};
+
+https.createServer(options, app).listen(5001, () => {
+    console.log('Server is running on https://96.236.218.144:5001');
+});
+
 // MongoDB connection
 const MONGODB_URI = 'mongodb+srv://linafu2:ilovetoro1290@logbook.37uspot.mongodb.net/?retryWrites=true&w=majority&appName=logbook';
 
