@@ -98,7 +98,7 @@
 <!-- mongodb storage -->
 <script>
     async function loadLogEntries() {
-        const response = await fetch('http://96.236.218.144:5001/entries');
+        const response = await fetch('http://155.33.132.8:5001/entries');
         const entries = await response.json();
         const logEntries = document.getElementById('logEntries');
         logEntries.innerHTML = '';
@@ -120,7 +120,7 @@
         }
 
         try {
-            const response = await fetch('http://96.236.218.144:5001/entries', {
+            const response = await fetch('http://155.33.132.8:5001/entries', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
