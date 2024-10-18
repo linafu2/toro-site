@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>talk to toro</title>
+    <style>
+        body {
+            background-color: rgba(255, 244, 182, 0.5);
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .top-space {
+            margin-top: 5%;
+        }
+
+        .logbook-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 50px;
+            background: #FFFEF2;
+            border-radius: 10px;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid rgb(111, 78, 55);
+            padding: 10px 0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-form {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .log-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgb(111, 78, 55);
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .log-form input[type="text"]:focus {
+            outline: none;
+            border-color: rgb(111, 78, 55);
+            box-shadow: 0 0 5px pink;
+        }
+
+        .log-form input[type="button"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: rgb(111, 78, 55);
+            color: #FFFEF2;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .medsans {
+            color: rgb(111, 78, 55);
+            font-family: Assistant, sans-serif;
+            font-size: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--toro home button-->
+<nav class="center top-space">
+    <a href="./index.html"><img
+            src="https://www.models-resource.com/resources/big_icons/45/44369.png?updated=1616444557"
+            alt="toro" style="height:100px;"></a>
+</nav>
+
+<!--logbook container-->
+<div class="logbook-container center medsans">
+    <h2>talk to toro</h2>
+    <div class="log-form">
+        <input type="text" id="logInput" placeholder="anything...">
+        <input type="button" value="submit" onclick="addLogEntry()">
+    </div>
+    <div id="logEntries">
+        <!--log entries will appear here-->
+    </div>
+</div>
+
+</body>
+</html>
