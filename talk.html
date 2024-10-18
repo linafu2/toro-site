@@ -29,7 +29,6 @@
         }
 
         .message {
-            border-bottom: 1px solid rgb(111, 78, 55);
             padding: 10px 0;
         }
 
@@ -106,7 +105,7 @@
         if (!message) return;
 
         // display user's message in the chat log
-        addMessage('You: ' + message);
+        addMessage('u: ' + message);
         inputField.value = ''; // clear input field
 
         try {
@@ -122,7 +121,7 @@
             addMessage('toro: ' + data.response); // display the response from Toro
         } catch (error) {
             console.error('error:', error);
-            addMessage('error: unable to get a response from toro');
+            addMessage('toro is busy right now');
         }
     }
 
