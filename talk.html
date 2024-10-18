@@ -20,7 +20,7 @@
             margin-top: 5%;
         }
 
-        .logbook-container {
+        .chat-container {
             max-width: 500px;
             margin: 50px auto;
             padding: 50px;
@@ -28,23 +28,19 @@
             border-radius: 10px;
         }
 
-        .log-entry {
+        .message {
             border-bottom: 1px solid rgb(111, 78, 55);
             padding: 10px 0;
         }
 
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-
-        .log-form {
+        .chat-form {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
             font-size: 15px;
         }
 
-        .log-form input[type="text"] {
+        .chat-form input[type="text"] {
             flex: 1;
             padding: 10px;
             border: 1px solid rgb(111, 78, 55);
@@ -52,13 +48,13 @@
             margin-right: 10px;
         }
 
-        .log-form input[type="text"]:focus {
+        .chat-form input[type="text"]:focus {
             outline: none;
             border-color: rgb(111, 78, 55);
             box-shadow: 0 0 5px pink;
         }
 
-        .log-form input[type="button"] {
+        .chat-form input[type="button"] {
             padding: 10px 20px;
             border: none;
             background-color: rgb(111, 78, 55);
@@ -83,17 +79,72 @@
             alt="toro" style="height:100px;"></a>
 </nav>
 
-<!--logbook container-->
-<div class="logbook-container center medsans">
+<!--chatbot container-->
+<div id="toro-chatbot" class="chat-container center medsans">
     <h2>talk to toro</h2>
-    <div class="log-form">
-        <input type="text" id="logInput" placeholder="anything...">
-        <input type="button" value="submit" onclick="addLogEntry()">
-    </div>
-    <div id="logEntries">
-        <!--log entries will appear here-->
-    </div>
 </div>
 
+<!--load babel for jsx-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!--chatbot react component -->
+<script type="text/babel">
+    // define chatbot component
+    function Chatbot() {
+      const [message, setMessage] = React.useState("");
+      const [chatLog, setChatLog] = React.useState([]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (message.trim() === "") return; // skip empty messages
+
+        // send the message to the server
+        const response = await fetch('http://localhost:5001/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        });
+
+        const data = await response.json();
+
+        // update chat log with user and bot messages
+        setChatLog([
+          ...chatLog, 
+          { role: "user", content: message }, 
+          { role: "bot", content: data.reply }
+        ]);
+
+        setMessage(""); // clear input field
+      };
+
+      return (
+        <div>
+          <div>
+            {chatLog.map((entry, index) => (
+              <p key={index}>
+                <strong>{entry.role === "user" ? "You" : "Toro"}:</strong> {entry.content}
+              </p>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="chat-form">
+            <input 
+              type="text" 
+              value={message} 
+              onChange={(e) => setMessage(e.target.value)} 
+              placeholder="talk..."
+            />
+            <button type="submit">send</button>
+          </form>
+        </div>
+      );
+    }
+
+    // render chatbot component in the toro-chatbot div
+    ReactDOM.render(<Chatbot />, document.getElementById('toro-chatbot'));
+</script>
 </body>
 </html>
