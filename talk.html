@@ -63,6 +63,15 @@
             cursor: pointer;
         }
 
+        .chat-log {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid rgb(111, 78, 55);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
         .medsans {
             color: rgb(111, 78, 55);
             font-family: Assistant, sans-serif;
@@ -82,69 +91,49 @@
 <!--chatbot container-->
 <div id="toro-chatbot" class="chat-container center medsans">
     <h2>talk to toro</h2>
+    <div class="chat-log" id="chatLog"> </div>
+    <div class="chat-form">
+        <input type="text" id="chatInput" placeholder="talk...">
+        <input type="button" value="submit" onclick="sendMessage()">
+    </div>
 </div>
 
-<!--load babel for jsx-->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script>
+    async function sendMessage() {
+        const inputField = document.getElementById('chatInput');
+        const message = inputField.value;
+        
+        if (!message) return;
 
-<!--chatbot react component -->
-<script type="text/babel">
-    // define chatbot component
-    function Chatbot() {
-      const [message, setMessage] = React.useState("");
-      const [chatLog, setChatLog] = React.useState([]);
+        // display user's message in the chat log
+        addMessage('You: ' + message);
+        inputField.value = ''; // clear input field
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (message.trim() === "") return; // skip empty messages
-
-        // send the message to the server
-        const response = await fetch('http://localhost:5001/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ message }),
-        });
-
-        const data = await response.json();
-
-        // update chat log with user and bot messages
-        setChatLog([
-          ...chatLog, 
-          { role: "user", content: message }, 
-          { role: "bot", content: data.reply }
-        ]);
-
-        setMessage(""); // clear input field
-      };
-
-      return (
-        <div>
-          <div>
-            {chatLog.map((entry, index) => (
-              <p key={index}>
-                <strong>{entry.role === "user" ? "You" : "Toro"}:</strong> {entry.content}
-              </p>
-            ))}
-          </div>
-
-          <form onSubmit={handleSubmit} className="chat-form">
-            <input 
-              type="text" 
-              value={message} 
-              onChange={(e) => setMessage(e.target.value)} 
-              placeholder="talk..."
-            />
-            <button type="submit">send</button>
-          </form>
-        </div>
-      );
+        try {
+            const response = await fetch('http://localhost:5001/chat', { // Adjust this URL as needed
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            addMessage('toro: ' + data.response); // display the response from Toro
+        } catch (error) {
+            console.error('error:', error);
+            addMessage('error: unable to get a response from toro');
+        }
     }
 
-    // render chatbot component in the toro-chatbot div
-    ReactDOM.render(<Chatbot />, document.getElementById('toro-chatbot'));
+    function addMessage(text) {
+        const chatLog = document.getElementById('chatLog');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.textContent = text;
+        chatLog.appendChild(messageDiv);
+        chatLog.scrollTop = chatLog.scrollHeight; // scroll to the bottom
+    }
 </script>
 </body>
 </html>
