@@ -118,7 +118,7 @@
             });
             
             const data = await response.json();
-            addMessage('toro: ' + data.response); // display the response from Toro
+            addMessage('toro: ' + data.reply); // display the response from toro
         } catch (error) {
             console.error('error:', error);
             addMessage('toro is busy right now');

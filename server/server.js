@@ -24,7 +24,7 @@ app.post('/chat', async (req, res) => {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: message }],
     });
 
@@ -37,5 +37,5 @@ app.post('/chat', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running on http://0.0.0.0:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
