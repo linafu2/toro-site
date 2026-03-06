@@ -1,9 +1,4 @@
 import React, { useState } from 'react';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const ToroChat = () => {
   const [messages, setMessages] = useState([{ role: "system", content: "You are Toro, a friendly cat!" }]);
@@ -19,15 +14,20 @@ const ToroChat = () => {
     setLoading(true);
 
     try {
-      const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: newMessages,
+      // send the new messages to this backend
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessage }),
       });
-
-      const toroReply = chatCompletion.choices[0].message;
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      const toroReply = { role: 'assistant', content: data.reply };
       setMessages([...newMessages, toroReply]);
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }

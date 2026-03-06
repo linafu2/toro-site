@@ -13,6 +13,10 @@ const openai = new OpenAI({
 // Middleware to parse JSON
 app.use(express.json());
 
+// enable CORS so the React app on port 3000 can talk to this server
+const cors = require('cors');
+app.use(cors());
+
 // Root Route
 app.get('/', (req, res) => {
   res.send('Welcome to the Toro Chatbot Server!');
@@ -31,6 +35,15 @@ app.post('/chat', async (req, res) => {
     res.json({ reply: response.choices[0].message.content });
   } catch (error) {
     console.error(error);
+    // If the error is a quota / rate-limit issue, return a friendly dev fallback
+    const code = error && (error.code || (error.error && error.error.code));
+    const type = error && (error.type || (error.error && error.error.type));
+    const status = error && error.status;
+
+    if (status === 429 || code === 'insufficient_quota' || type === 'insufficient_quota') {
+      return res.json({ reply: "Toro is busy right now (dev fallback). I'll be back when API quota is available." });
+    }
+
     res.status(500).send('Error generating chat completion');
   }
 });
